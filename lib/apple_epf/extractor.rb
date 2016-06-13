@@ -1,6 +1,6 @@
 module AppleEpf
   class Extractor
-    class FileEntry <  Struct.new(:tbz_file, :extracted_files); end
+    class FileEntry < Struct.new(:tbz_file, :extracted_files); end
 
     attr_reader :file_entry, :filename, :dirname, :basename
     attr_accessor :keep_tbz_after_extract
@@ -13,9 +13,9 @@ module AppleEpf
       @basename = File.basename(@filename)
     end
 
-    #TODO use multithread uncompressing tool
+    # TODO: use multithread uncompressing tool
     def perform
-      @extracted_files = Array.new
+      @extracted_files = []
       @files_to_extract.each do |f|
         @extracted_files.push File.basename(@filename, '.tbz') + '/' + f
       end
@@ -25,7 +25,7 @@ module AppleEpf
       result = system "cd #{@dirname} && #{extract}"
 
       if result
-        _extracted_files = @extracted_files.map{|f| File.join(@dirname, f)}
+        _extracted_files = @extracted_files.map { |f| File.join(@dirname, f) }
         @file_entry = FileEntry.new(@filename, Hash[@files_to_extract.zip(_extracted_files)])
         FileUtils.remove_file(@filename, true) unless keep_tbz_after_extract?
       else
@@ -47,11 +47,11 @@ module AppleEpf
     end
 
     def archiver_opts
-      if AppleEpf.use_lbzip2
-        format_opt = "--use-compress-program=lbzip2"
-      else
-        format_opt = "-j"
-      end
+      format_opt = if AppleEpf.use_lbzip2
+                     '--use-compress-program=lbzip2'
+                   else
+                     '-j'
+                   end
 
       if AppleEpf.archiver == :gnutar
         "-x #{format_opt} -f"

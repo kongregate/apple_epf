@@ -18,15 +18,13 @@ module AppleEpf
     private
 
     def self.initialize_logger
-      begin
-        logfile = File.open(AppleEpf::log_file, File::WRONLY | File::APPEND | File::CREAT)
-        logger = Logger.new(logfile, 'weekly')
-        logger.level = Logger::DEBUG
-        logger
-      rescue
-        p "Unable to create logger"
-        raise $!
-      end
+      logfile = File.open(AppleEpf.log_file, File::WRONLY | File::APPEND | File::CREAT)
+      logger = Logger.new(logfile, 'weekly')
+      logger.level = Logger::DEBUG
+      logger
+    rescue
+      p 'Unable to create logger'
+      raise $ERROR_INFO
     end
   end
 end

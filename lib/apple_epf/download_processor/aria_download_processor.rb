@@ -9,8 +9,7 @@ class AppleEpf::AriaDownloadProcessor < AppleEpf::DownloadProcessor
     result = system(command)
 
     unless result
-      raise AppleEpf::DownloaderError.new("Unable to download file. #{$?}")
+      raise AppleEpf::DownloaderError.new("Unable to download file. #{$CHILD_STATUS}")
     end
   end
-
 end

@@ -2,93 +2,87 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
 describe AppleEpf::Downloader do
-
   let(:type) { 'incremental' }
   let(:filedate) { Date.parse('17-01-2013') }
   let(:file) { 'popularity' }
-  let(:downloader) {AppleEpf::Downloader.new(type, file, filedate)}
+  let(:downloader) { AppleEpf::Downloader.new(type, file, filedate) }
   let(:file_exists) { true }
 
-  describe "#get_filename_by_date_and_type" do
+  describe '#get_filename_by_date_and_type' do
     before do
-      downloader.stub(:file_exists?){ file_exists }
+      downloader.stub(:file_exists?) { file_exists }
     end
 
-    it "should raise exception if path can not be determined" do
+    it 'should raise exception if path can not be determined' do
       downloader.type = 'crazytype'
-      expect {
+      expect do
         downloader.get_filename_by_date_and_type
-      }.to raise_exception
+      end.to raise_exception
     end
 
-    context "type is full" do
+    context 'type is full' do
       let(:type) { 'full' }
 
-      context "and file exists" do
+      context 'and file exists' do
         let(:file_exists) { true }
 
-        it "should return valid url if file exists" do
+        it 'should return valid url if file exists' do
           downloader.filedate = Date.parse('17-01-2013')
-          downloader.get_filename_by_date_and_type.should == "20130116/popularity20130116.tbz"
+          downloader.get_filename_by_date_and_type.should == '20130116/popularity20130116.tbz'
         end
       end
 
-      context "and file does not exists" do
-        it "should raise exception" do
+      context 'and file does not exists' do
+        it 'should raise exception' do
           downloader.stub(:file_exists?).and_return(false, false)
           downloader.filedate = Date.parse('17-01-2013')
-          expect {
+          expect do
             downloader.get_filename_by_date_and_type
-          }.to raise_exception(AppleEpf::FileNotExist)
+          end.to raise_exception(AppleEpf::FileNotExist)
         end
       end
-
     end
 
-    context "type is incremental" do
+    context 'type is incremental' do
       let(:type) { 'incremental' }
 
-      context "and file exists" do
+      context 'and file exists' do
         let(:file_exists) { true }
 
-        it "should return valid url if file exists" do
+        it 'should return valid url if file exists' do
           downloader.filedate = Date.parse('17-01-2013')
-          downloader.get_filename_by_date_and_type.should == "20130109/incremental/20130117/popularity20130117.tbz"
+          downloader.get_filename_by_date_and_type.should == '20130109/incremental/20130117/popularity20130117.tbz'
         end
 
-
-        it "should return valid url if file exists but in prev catalog" do
+        it 'should return valid url if file exists but in prev catalog' do
           downloader.stub(:file_exists?).and_return(false, true)
           downloader.filedate = Date.parse('26-04-2013')
-          downloader.get_filename_by_date_and_type.should == "20130417/incremental/20130426/popularity20130426.tbz"
+          downloader.get_filename_by_date_and_type.should == '20130417/incremental/20130426/popularity20130426.tbz'
         end
       end
 
-      context "and file does not exists" do
-        it "should raise exception" do
+      context 'and file does not exists' do
+        it 'should raise exception' do
           downloader.stub(:file_exists?).and_return(false, false)
           downloader.filedate = Date.parse('17-01-2013')
-          expect {
+          expect do
             downloader.get_filename_by_date_and_type
-          }.to raise_exception(AppleEpf::FileNotExist)
+          end.to raise_exception(AppleEpf::FileNotExist)
         end
       end
-
     end
 
-    context "type is file" do
+    context 'type is file' do
       skip
     end
-
   end
 
-  describe "#main_dir_date" do
-
-    context "full" do
+  describe '#main_dir_date' do
+    context 'full' do
       let(:type) { 'full' }
-      it "should return the same week wednesday" do
-        downloader.filedate = Date.parse('17-01-2013') #thursday
-        downloader.send(:main_dir_date).should == "20130116"
+      it 'should return the same week wednesday' do
+        downloader.filedate = Date.parse('17-01-2013') # thursday
+        downloader.send(:main_dir_date).should == '20130116'
       end
       # it "should return wednesday of this week if filedate is thur-sun" do
       #   downloader.filedate = Date.parse('17-01-2013') #thursday
@@ -107,27 +101,27 @@ describe AppleEpf::Downloader do
       # end
     end
 
-    context "incremental" do
+    context 'incremental' do
       let(:type) { 'incremental' }
-      it "should return wednesday of this week if filedate is friday-sunday" do
-        downloader.filedate = Date.parse('18-01-2013') #friday
-        downloader.send(:main_dir_date).should == "20130116"
+      it 'should return wednesday of this week if filedate is friday-sunday' do
+        downloader.filedate = Date.parse('18-01-2013') # friday
+        downloader.send(:main_dir_date).should == '20130116'
 
-        downloader.filedate = Date.parse('19-01-2013') #sut
-        downloader.send(:main_dir_date).should == "20130116"
+        downloader.filedate = Date.parse('19-01-2013') # sut
+        downloader.send(:main_dir_date).should == '20130116'
       end
 
-      it "should return wednesday of prev week if filedate is monday-thursday" do
-        downloader.filedate = Date.parse('21-01-2013') #monday
-        downloader.send(:main_dir_date).should == "20130116"
+      it 'should return wednesday of prev week if filedate is monday-thursday' do
+        downloader.filedate = Date.parse('21-01-2013') # monday
+        downloader.send(:main_dir_date).should == '20130116'
 
-        downloader.filedate = Date.parse('24-01-2013') #thursday
-        downloader.send(:main_dir_date).should == "20130116"
+        downloader.filedate = Date.parse('24-01-2013') # thursday
+        downloader.send(:main_dir_date).should == '20130116'
       end
     end
   end
 
-  describe "download" do
+  describe 'download' do
     let(:filedate) { Date.parse('21-01-2013') }
 
     before do
@@ -143,87 +137,83 @@ describe AppleEpf::Downloader do
       downloader.stub(:download_and_compare_md5_checksum)
     end
 
-    it "should properly set url for download" do
-      downloader.stub(:file_exists?){ file_exists }
+    it 'should properly set url for download' do
+      downloader.stub(:file_exists?) { file_exists }
       downloader.stub(:start_download)
       downloader.prepare
-      downloader.apple_filename_full.should eq("https://feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz")
+      downloader.apple_filename_full.should eq('https://feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz')
     end
 
-    it "should properly set local file to store file in" do
-      downloader.stub(:file_exists?){ file_exists }
+    it 'should properly set local file to store file in' do
+      downloader.stub(:file_exists?) { file_exists }
       downloader.stub(:start_download)
       downloader.prepare
       downloader.download_to.should eq("#{@tmp_dir}/incremental/popularity20130121.tbz")
     end
 
-    it "should download and save file" do
-      stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130123/popularity20130123.tbz").
-        to_return(:status => 200, :body => "Test\nWow", :headers => {})
+    it 'should download and save file' do
+      stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130123/popularity20130123.tbz')
+        .to_return(status: 200, body: "Test\nWow", headers: {})
 
-      stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130123/popularity20130123.tbz.md5").
-        to_return(:status => 200, :body => "MD5 (popularity20130116.tbz) = 0371a79664856494e840af9e1e6c0152\n", :headers => {})
+      stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130123/popularity20130123.tbz.md5')
+        .to_return(status: 200, body: "MD5 (popularity20130116.tbz) = 0371a79664856494e840af9e1e6c0152\n", headers: {})
 
       downloader = AppleEpf::Downloader.new('full', file, filedate)
       downloader.stub(:download_and_compare_md5_checksum)
-      downloader.stub(:file_exists?){ file_exists }
+      downloader.stub(:file_exists?) { file_exists }
       downloader.download
       IO.read(downloader.download_to).should eq("Test\nWow")
     end
 
-    it "should retry 3 times to download" do
+    it 'should retry 3 times to download' do
       skip
     end
 
-    describe "dirpath" do
+    describe 'dirpath' do
       before do
-        downloader.stub(:file_exists?){ file_exists }
-        #downloader.stub(:start_download)
+        downloader.stub(:file_exists?) { file_exists }
+        # downloader.stub(:start_download)
         AppleEpf.download_processor.any_instance.stub(:download_and_check)
       end
 
-      it "should be able to change dir where to save files" do
+      it 'should be able to change dir where to save files' do
         tmp_dir = Dir.tmpdir
         downloader.dirpath = [tmp_dir, 'whatever_path'].join('/')
         downloader.download.should ==  "#{tmp_dir}/whatever_path/incremental/popularity20130121.tbz"
       end
     end
 
-    describe "#download_and_compare_md5_checksum" do
+    describe '#download_and_compare_md5_checksum' do
       before do
         downloader.unstub(:download_and_compare_md5_checksum)
       end
-      it "should raise exception if md5 file does not match real md5 checksum of file" do
-        stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz").
-          to_return(:status => 200, :body => "Test\nWow", :headers => {})
+      it 'should raise exception if md5 file does not match real md5 checksum of file' do
+        stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz')
+          .to_return(status: 200, body: "Test\nWow", headers: {})
 
-        stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz.md5").
-          to_return(:status => 200, :body => "tupo", :headers => {})
+        stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz.md5')
+          .to_return(status: 200, body: 'tupo', headers: {})
 
-        downloader.stub(:file_exists?){ file_exists }
+        downloader.stub(:file_exists?) { file_exists }
 
-        expect {
+        expect do
           downloader.download
-        }.to raise_exception(AppleEpf::Md5CompareError)
-
+        end.to raise_exception(AppleEpf::Md5CompareError)
       end
 
-      it "should not raise exception if md5 is ok" do
-        stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz").
-          to_return(:status => 200, :body => "Test\nWow", :headers => {})
+      it 'should not raise exception if md5 is ok' do
+        stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz')
+          .to_return(status: 200, body: "Test\nWow", headers: {})
 
-        stub_request(:get, "https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz.md5").
-          to_return(:status => 200, :body => "MD5 (popularity20130116.tbz) = 0371a79664856494e840af9e1e6c0152\n", :headers => {})
+        stub_request(:get, 'https://test:test@feeds.itunes.apple.com/feeds/epf/v3/full/20130116/incremental/20130121/popularity20130121.tbz.md5')
+          .to_return(status: 200, body: "MD5 (popularity20130116.tbz) = 0371a79664856494e840af9e1e6c0152\n", headers: {})
 
+        downloader.stub(:file_exists?) { file_exists }
 
-        downloader.stub(:file_exists?){ file_exists }
-
-        expect {
+        expect do
           downloader.download
-        }.not_to raise_exception
-
+        end.not_to raise_exception
       end
     end
   end
-
 end

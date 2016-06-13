@@ -12,15 +12,14 @@ require 'apple_epf/downloader'
 require 'apple_epf/extractor'
 require 'apple_epf/parser'
 
-
 module AppleEpf
-  FILE_TYPES = %w( full incremental )
+  FILE_TYPES = %w( full incremental ).freeze
 
   mattr_accessor :apple_id
-  @@apple_id = "test"
+  @@apple_id = 'test'
 
   mattr_accessor :apple_password
-  @@apple_password = "test"
+  @@apple_password = 'test'
 
   mattr_accessor :download_retry_count
   @@download_retry_count = 3
@@ -44,12 +43,12 @@ module AppleEpf
   @@log_file = '/dev/null'
 
   mattr_accessor :files_matrix
-  @@files_matrix = {popularity: ['application_popularity_per_genre']}.freeze
+  @@files_matrix = { popularity: ['application_popularity_per_genre'] }.freeze
   mattr_accessor :archiver
   @@archiver = :gnutar
 
   mattr_accessor :archiver_path
-  @@archiver_path = "/usr/bin/tar"
+  @@archiver_path = '/usr/bin/tar'
 
   mattr_accessor :use_lbzip2
   @@use_lbzip2 = false

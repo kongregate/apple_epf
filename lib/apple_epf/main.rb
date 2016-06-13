@@ -13,38 +13,38 @@ module AppleEpf
     end
 
     def self.get_current_list
-        curl = Curl::Easy.new(self.current_url)
-        curl.http_auth_types = :basic
-        curl.username = AppleEpf.apple_id
-        curl.password = AppleEpf.apple_password
-        curl.follow_location = true
-        curl.max_redirects = 5
-        curl.perform
-        body = curl.body_str
+      curl = Curl::Easy.new(current_url)
+      curl.http_auth_types = :basic
+      curl.username = AppleEpf.apple_id
+      curl.password = AppleEpf.apple_password
+      curl.follow_location = true
+      curl.max_redirects = 5
+      curl.perform
+      body = curl.body_str
 
-        files =  Nokogiri::HTML(body).xpath("//td/a").map(&:text).select{|s| s=~/.*tbz$/}
+      files = Nokogiri::HTML(body).xpath('//td/a').map(&:text).select { |s| s =~ /.*tbz$/ }
 
-        files.inject({}) do |all, e|
-          e.match(/([a-z]*)(\d*.tbz)/)
-          all[$1] = {}
-          all[$1][:base] = $2.chomp(".tbz")
-          all[$1][:full_url] = self.current_url + "/#{$1}#{$2}"
-          all
-        end
+      files.inject({}) do |all, e|
+        e =~ /([a-z]*)(\d*.tbz)/
+        all[Regexp.last_match(1)] = {}
+        all[Regexp.last_match(1)][:base] = Regexp.last_match(2).chomp('.tbz')
+        all[Regexp.last_match(1)][:full_url] = current_url + "/#{Regexp.last_match(1)}#{Regexp.last_match(2)}"
+        all
+      end
     end
 
     module BaseActions
-      def download_all_files(&block)
+      def download_all_files
         downloaded_files = []
 
-        @files_matrix.each_pair do |filename, extractables|
+        @files_matrix.each_pair do |filename, _extractables|
           begin
-            downloaded = self.download(filename)
+            downloaded = download(filename)
             downloaded_files << downloaded
-            block.call(downloaded) if block_given?
+            yield(downloaded) if block_given?
           rescue AppleEpf::DownloaderError
             AppleEpf::Logging.logger.fatal "Failed to download file #{filename}"
-            AppleEpf::Logging.logger.fatal $!
+            AppleEpf::Logging.logger.fatal $ERROR_INFO
             next
           end
         end
@@ -52,14 +52,14 @@ module AppleEpf
         downloaded_files
       end
 
-      def download_and_extract_all_files(&block)
+      def download_and_extract_all_files
         extracted_files = []
 
         @files_matrix.each_pair do |filename, extractables|
           begin
             extracted_file = download_and_extract(filename.to_s, extractables)
             extracted_files << extracted_file
-            block.call(extracted_file) if block_given?
+            yield(extracted_file) if block_given?
           rescue
             AppleEpf::Logging.logger.fatal "Failed to download and parse file #{filename}"
             next
@@ -71,9 +71,9 @@ module AppleEpf
 
       # will return array of filepath of extracted files
       def download_and_extract(filename, extractables)
-        downloader = self.download(filename.to_s)
+        downloader = download(filename.to_s)
         downloaded_file = downloader.download_to
-        self.extract(downloaded_file, extractables)
+        extract(downloaded_file, extractables)
       end
 
       def download(filename)
@@ -92,7 +92,7 @@ module AppleEpf
     end
   end
 
-  class Incremental <  Main
+  class Incremental < Main
     include BaseActions
 
     def type
@@ -115,5 +115,4 @@ module AppleEpf
       'https://feeds.itunes.apple.com/feeds/epf/v3/full/current'
     end
   end
-
 end

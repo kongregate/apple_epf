@@ -14,33 +14,31 @@ class AppleEpf::CurbDownloadProcessor < AppleEpf::DownloadProcessor
   end
 
   private
+
   def download
-    begin
-      curl = Curl::Easy.new(@apple_filename_full)
+    curl = Curl::Easy.new(@apple_filename_full)
 
-      # Authentication
-      curl.http_auth_types = :basic
-      curl.username = AppleEpf.apple_id
-      curl.password = AppleEpf.apple_password
+    # Authentication
+    curl.http_auth_types = :basic
+    curl.username = AppleEpf.apple_id
+    curl.password = AppleEpf.apple_password
 
-      File.open(@download_to, 'wb') do |f|
-        curl.on_body { |data|
-          f << data;
-          data.size
-        }
-        curl.perform
+    File.open(@download_to, 'wb') do |f|
+      curl.on_body do |data|
+        f << data
+        data.size
       end
-    rescue Curl::Err::PartialFileError => ex
-      if @download_retry < AppleEpf.download_retry_count
-        @download_retry += 1
+      curl.perform
+    end
+  rescue Curl::Err::PartialFileError => ex
+    if @download_retry < AppleEpf.download_retry_count
+      @download_retry += 1
 
-        logger_info "Curl::Err::PartialFileError happened..."
-        logger_info "Restarting download"
-        download
-      else
-        raise AppleEpf::CurlError.new("Unable to download file.")
-      end
+      logger_info 'Curl::Err::PartialFileError happened...'
+      logger_info 'Restarting download'
+      download
+    else
+      raise AppleEpf::CurlError.new('Unable to download file.')
     end
   end
-
 end

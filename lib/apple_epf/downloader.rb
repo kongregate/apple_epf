@@ -16,7 +16,7 @@ module AppleEpf
     attr_writer :dirpath
     def initialize(type, filename, filedate, force_url = nil)
       @type = type
-      @filename = filename #itunes, popularity, match, pricing
+      @filename = filename # itunes, popularity, match, pricing
       @filedate = filedate
       @force_url = force_url
     end
@@ -43,31 +43,30 @@ module AppleEpf
       File.join((@dirpath || AppleEpf.extract_dir), @type)
     end
 
-
     def get_filename_by_date_and_type
-      #today = DateTime.now
-      path = ""
+      # today = DateTime.now
+      path = ''
       case @type
-        when "full"
-          path = "#{main_dir_date}/#{@filename}#{main_dir_date}.tbz"
+      when 'full'
+        path = "#{main_dir_date}/#{@filename}#{main_dir_date}.tbz"
 
-        when "incremental"
-          date_of_file = date_to_epf_format(@filedate)
-          path = "#{main_dir_date}/incremental/#{date_of_file}/#{@filename}#{date_of_file}.tbz"
+      when 'incremental'
+        date_of_file = date_to_epf_format(@filedate)
+        path = "#{main_dir_date}/incremental/#{date_of_file}/#{@filename}#{date_of_file}.tbz"
 
-        when "file"
-          #TODO: FIX THIS
-          # date = date_to_epf_format( @filedate, check_if_in_previous_week, check_if_in_thursday )
-          # path = "#{file}#{date}.tbz"
+      when 'file'
+        # TODO: FIX THIS
+        # date = date_to_epf_format( @filedate, check_if_in_previous_week, check_if_in_thursday )
+        # path = "#{file}#{date}.tbz"
       end
 
       # Return false if no url was suggested or file does not exist
-      raise AppleEpf::DownloaderError.new("Unable to find out what file do you want to download") if path.empty?
+      raise AppleEpf::DownloaderError.new('Unable to find out what file do you want to download') if path.empty?
 
       _full_url = apple_filename_full_url(path)
       unless file_exists?(_full_url)
         if @type == 'incremental'
-          #force prev week. Apple sometimes put files for Sunday to prev week, not current.
+          # force prev week. Apple sometimes put files for Sunday to prev week, not current.
           path = "#{main_dir_date(true)}/incremental/#{date_of_file}/#{@filename}#{date_of_file}.tbz"
           _full_url = apple_filename_full_url(path)
           raise AppleEpf::FileNotExist.new("File does not exist #{path}") unless file_exists?(_full_url)
@@ -81,7 +80,7 @@ module AppleEpf
     end
 
     def downloaded_file_base_name
-      File.basename(@download_to, '.tbz') #popularity20130109
+      File.basename(@download_to, '.tbz') # popularity20130109
     end
 
     private
@@ -96,15 +95,15 @@ module AppleEpf
     end
 
     def main_dir_date(force_last = false)
-      if @type == "incremental"
+      if @type == 'incremental'
         # from Mon to Thurday dumps are in prev week folder
         this_or_last = @filedate.wday <= 4 || force_last ? 'last' : 'this'
-      elsif @type == "full"
+      elsif @type == 'full'
         # full downloads usually are done only once. user can determine when it should be done
         this_or_last = 'this'
       end
 
-      main_folder_date = Chronic.parse("#{this_or_last} week wednesday", :now => @filedate.to_time).to_date
+      main_folder_date = Chronic.parse("#{this_or_last} week wednesday", now: @filedate.to_time).to_date
       date_to_epf_format(main_folder_date)
     end
   end

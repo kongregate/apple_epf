@@ -23,8 +23,8 @@ describe AppleEpf::Extractor do
     FileUtils.remove_dir(@tmp_dir)
   end
 
-  describe "initialize" do
-    it "should set instance variables" do
+  describe 'initialize' do
+    it 'should set instance variables' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
 
       extractor.filename.should == @copy_to
@@ -33,17 +33,17 @@ describe AppleEpf::Extractor do
     end
   end
 
-  describe "perform" do
-    it "should raise error if extracting was not successful" do
+  describe 'perform' do
+    it 'should raise error if extracting was not successful' do
       files_to_extract = ['application', 'wrong_file.txt']
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
 
-      expect {
+      expect do
         extractor.perform
-      }.to raise_exception ("Unable to extract files '#{files_to_extract.join(' ')}' from #{@copy_to}")
+      end.to raise_exception "Unable to extract files '#{files_to_extract.join(' ')}' from #{@copy_to}"
     end
 
-    it "should return list if extracted files" do
+    it 'should return list if extracted files' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.perform
       extractor.file_entry.tbz_file.should == @copy_to
@@ -56,17 +56,17 @@ describe AppleEpf::Extractor do
       extractor.file_entry.tbz_file.should == @copy_to
     end
 
-    it "should remove file if successfully untarred" do
+    it 'should remove file if successfully untarred' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.perform
-      File.exists?(extractor.filename).should be_falsey
+      File.exist?(extractor.filename).should be_falsey
     end
 
-    it "should not remove file if successfully untarred and it was asked to leave file" do
+    it 'should not remove file if successfully untarred and it was asked to leave file' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.keep_tbz_after_extract = true
       extractor.perform
-      File.exists?(extractor.filename).should be_truthy
+      File.exist?(extractor.filename).should be_truthy
     end
   end
 end

@@ -11,13 +11,12 @@ class Module
         end
       EOS
 
-      unless options[:instance_reader] == false || options[:instance_accessor] == false
-        class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+      next if options[:instance_reader] == false || options[:instance_accessor] == false
+      class_eval(<<-EOS, __FILE__, __LINE__ + 1)
           def #{sym}
             @@#{sym}
           end
-        EOS
-      end
+      EOS
     end
   end
 
@@ -30,13 +29,12 @@ class Module
         end
       EOS
 
-      unless options[:instance_writer] == false || options[:instance_accessor] == false
-        class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+      next if options[:instance_writer] == false || options[:instance_accessor] == false
+      class_eval(<<-EOS, __FILE__, __LINE__ + 1)
           def #{sym}=(obj)
             @@#{sym} = obj
           end
-        EOS
-      end
+      EOS
     end
   end
 
