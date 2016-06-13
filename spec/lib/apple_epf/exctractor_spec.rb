@@ -27,9 +27,9 @@ describe AppleEpf::Extractor do
     it 'should set instance variables' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
 
-      extractor.filename.should == @copy_to
-      extractor.dirname.should == @tmp_dir
-      extractor.basename.should == file_basename
+      extractor.filename.should eq(@copy_to)
+      extractor.dirname.should eq(@tmp_dir)
+      extractor.basename.should eq(file_basename)
     end
   end
 
@@ -46,14 +46,14 @@ describe AppleEpf::Extractor do
     it 'should return list if extracted files' do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.perform
-      extractor.file_entry.tbz_file.should == @copy_to
+      extractor.file_entry.tbz_file.should eq(@copy_to)
 
       expected_extracted = files_to_extract.map do |f|
         File.join(@tmp_dir, 'itunes20130111', f)
       end
 
-      extractor.file_entry.extracted_files.should == Hash[files_to_extract.zip(expected_extracted)]
-      extractor.file_entry.tbz_file.should == @copy_to
+      extractor.file_entry.extracted_files.should eq(Hash[files_to_extract.zip(expected_extracted)])
+      extractor.file_entry.tbz_file.should eq(@copy_to)
     end
 
     it 'should remove file if successfully untarred' do

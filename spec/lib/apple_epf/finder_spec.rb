@@ -9,12 +9,12 @@ describe AppleEpf::Finder do
       interesting_date = Date.parse('20140124')
 
       r = AppleEpf::Finder.detect_closest_weeks_for_date(all_weeks, interesting_date)
-      r.should == %w(20140108 20140115 20140122 20140129)
+      r.should eq(%w(20140108 20140115 20140122 20140129))
 
       interesting_date = Date.parse('20131002')
 
       r = AppleEpf::Finder.detect_closest_weeks_for_date(all_weeks, interesting_date)
-      r.should == %w(20130925 20131002 20131009 20131016)
+      r.should eq(%w(20130925 20131002 20131009 20131016))
     end
   end
 end

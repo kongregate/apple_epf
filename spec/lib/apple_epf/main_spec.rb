@@ -23,13 +23,13 @@ describe AppleEpf::Main do
       custom_dir = [Dir.tmpdir, 'epm_files_custom'].join('/')
       manager = AppleEpf::Incremental.new(filedate, nil, custom_dir)
 
-      manager.store_dir.should == custom_dir
-      manager.filedate.to_s.should == Date.parse('17-01-2013').to_s
-      manager.store_dir.should == custom_dir
-      manager.files_matrix.should == { popularity: ['application_popularity_per_genre'] }
+      manager.store_dir.should eq(custom_dir)
+      manager.filedate.to_s.should eq(Date.parse('17-01-2013').to_s)
+      manager.store_dir.should eq(custom_dir)
+      manager.files_matrix.should eq({ popularity: ['application_popularity_per_genre'] })
 
       manager = AppleEpf::Incremental.new(filedate, test: ['itworks'])
-      manager.files_matrix.should == { test: ['itworks'] }
+      manager.files_matrix.should eq({ test: ['itworks'] })
     end
   end
 
@@ -46,7 +46,7 @@ describe AppleEpf::Main do
     end
 
     it 'should download all files and return array with donwloaded files' do
-      @manager.download_all_files.should == [@downloder_double1, @downloder_double2]
+      @manager.download_all_files.should eq([@downloder_double1, @downloder_double2])
     end
 
     it 'should send to block if block given' do
@@ -91,10 +91,12 @@ describe AppleEpf::Main do
 
     it 'should download all files and return array with donwloaded files' do
       result = @manager.download_and_extract_all_files
-      result.map(&:extracted_files).should == [
-        Hash[['application', 'test_file.txt'].zip(@itunes_expected_extracted)],
-        Hash[%w(popularity1 popularity2).zip(@popularity_expected_extracted)]
-      ]
+      result.map(&:extracted_files).should eq(
+        [
+          Hash[['application', 'test_file.txt'].zip(@itunes_expected_extracted)],
+          Hash[%w(popularity1 popularity2).zip(@popularity_expected_extracted)]
+        ]
+      )
     end
 
     it 'should send to block if block given' do
@@ -119,7 +121,7 @@ describe AppleEpf::Main do
         File.join(@tmp_dir, 'itunes20130111', f)
       end
 
-      result.extracted_files.should == Hash[['application', 'test_file.txt'].zip(expected_extracted)]
+      result.extracted_files.should eq(Hash[['application', 'test_file.txt'].zip(expected_extracted)])
     end
   end
 
@@ -131,7 +133,7 @@ describe AppleEpf::Main do
 
       AppleEpf::Downloader.should_receive(:new).with('incremental', 'one', filedate).and_return(downloder_double1)
 
-      manager.download('one').download_to.should == 'somepath'
+      manager.download('one').download_to.should eq('somepath')
     end
   end
 
@@ -143,7 +145,7 @@ describe AppleEpf::Main do
       manager = AppleEpf::Incremental.new(filedate)
       AppleEpf::Extractor.should_receive(:new).with(file, ['extractable1']).and_return(extractor_double)
 
-      manager.extract(file, ['extractable1']).should == file_entry_double
+      manager.extract(file, ['extractable1']).should eq(file_entry_double)
     end
   end
 
@@ -161,7 +163,7 @@ describe AppleEpf::Main do
           'popularity' => { base: '20130130', full_url: 'https://feeds.itunes.apple.com/feeds/epf/v3/full/current/popularity20130130.tbz' },
           'pricing' => { base: '20130130', full_url: 'https://feeds.itunes.apple.com/feeds/epf/v3/full/current/pricing20130130.tbz' }
         }
-        AppleEpf::Full.get_current_list.should == list
+        AppleEpf::Full.get_current_list.should eq(list)
       end
     end
 
@@ -178,7 +180,7 @@ describe AppleEpf::Main do
           'popularity' => { base: '20130205', full_url: 'https://feeds.itunes.apple.com/feeds/epf/v3/full/current/incremental/current/popularity20130205.tbz' },
           'pricing' => { base: '20130205', full_url: 'https://feeds.itunes.apple.com/feeds/epf/v3/full/current/incremental/current/pricing20130205.tbz' }
         }
-        AppleEpf::Incremental.get_current_list.should == list
+        AppleEpf::Incremental.get_current_list.should eq(list)
       end
     end
   end

@@ -28,7 +28,7 @@ describe AppleEpf::Downloader do
 
         it 'should return valid url if file exists' do
           downloader.filedate = Date.parse('17-01-2013')
-          downloader.get_filename_by_date_and_type.should == '20130116/popularity20130116.tbz'
+          downloader.get_filename_by_date_and_type.should eq('20130116/popularity20130116.tbz')
         end
       end
 
@@ -51,13 +51,13 @@ describe AppleEpf::Downloader do
 
         it 'should return valid url if file exists' do
           downloader.filedate = Date.parse('17-01-2013')
-          downloader.get_filename_by_date_and_type.should == '20130109/incremental/20130117/popularity20130117.tbz'
+          downloader.get_filename_by_date_and_type.should eq('20130109/incremental/20130117/popularity20130117.tbz')
         end
 
         it 'should return valid url if file exists but in prev catalog' do
           downloader.stub(:file_exists?).and_return(false, true)
           downloader.filedate = Date.parse('26-04-2013')
-          downloader.get_filename_by_date_and_type.should == '20130417/incremental/20130426/popularity20130426.tbz'
+          downloader.get_filename_by_date_and_type.should eq('20130417/incremental/20130426/popularity20130426.tbz')
         end
       end
 
@@ -82,22 +82,22 @@ describe AppleEpf::Downloader do
       let(:type) { 'full' }
       it 'should return the same week wednesday' do
         downloader.filedate = Date.parse('17-01-2013') # thursday
-        downloader.send(:main_dir_date).should == '20130116'
+        downloader.send(:main_dir_date).should eq('20130116')
       end
       # it "should return wednesday of this week if filedate is thur-sun" do
       #   downloader.filedate = Date.parse('17-01-2013') #thursday
-      #   downloader.send(:main_dir_date).should == "20130116"
+      #   downloader.send(:main_dir_date).should eq("20130116")
 
       #   downloader.filedate = Date.parse('19-01-2013') #sut
-      #   downloader.send(:main_dir_date).should == "20130116"
+      #   downloader.send(:main_dir_date).should eq("20130116")
       # end
 
       # it "should return wednesday of prev week if filedate is mon-wed" do
       #   downloader.filedate = Date.parse('21-01-2013') #monday
-      #   downloader.send(:main_dir_date).should == "20130123"
+      #   downloader.send(:main_dir_date).should eq("20130123")
 
       #   downloader.filedate = Date.parse('23-01-2013') #wednesday
-      #   downloader.send(:main_dir_date).should == "20130123"
+      #   downloader.send(:main_dir_date).should eq("20130123")
       # end
     end
 
@@ -105,18 +105,18 @@ describe AppleEpf::Downloader do
       let(:type) { 'incremental' }
       it 'should return wednesday of this week if filedate is friday-sunday' do
         downloader.filedate = Date.parse('18-01-2013') # friday
-        downloader.send(:main_dir_date).should == '20130116'
+        downloader.send(:main_dir_date).should eq('20130116')
 
         downloader.filedate = Date.parse('19-01-2013') # sut
-        downloader.send(:main_dir_date).should == '20130116'
+        downloader.send(:main_dir_date).should eq('20130116')
       end
 
       it 'should return wednesday of prev week if filedate is monday-thursday' do
         downloader.filedate = Date.parse('21-01-2013') # monday
-        downloader.send(:main_dir_date).should == '20130116'
+        downloader.send(:main_dir_date).should eq('20130116')
 
         downloader.filedate = Date.parse('24-01-2013') # thursday
-        downloader.send(:main_dir_date).should == '20130116'
+        downloader.send(:main_dir_date).should eq('20130116')
       end
     end
   end
@@ -179,7 +179,7 @@ describe AppleEpf::Downloader do
       it 'should be able to change dir where to save files' do
         tmp_dir = Dir.tmpdir
         downloader.dirpath = [tmp_dir, 'whatever_path'].join('/')
-        downloader.download.should ==  "#{tmp_dir}/whatever_path/incremental/popularity20130121.tbz"
+        downloader.download.should eq("#{tmp_dir}/whatever_path/incremental/popularity20130121.tbz")
       end
     end
 
