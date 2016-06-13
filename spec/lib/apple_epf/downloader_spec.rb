@@ -77,7 +77,7 @@ describe AppleEpf::Downloader do
     end
 
     context "type is file" do
-      pending
+      skip
     end
 
   end
@@ -172,7 +172,7 @@ describe AppleEpf::Downloader do
     end
 
     it "should retry 3 times to download" do
-      pending
+      skip
     end
 
     describe "dirpath" do
@@ -220,7 +220,7 @@ describe AppleEpf::Downloader do
 
         expect {
           downloader.download
-        }.not_to raise_exception(AppleEpf::Md5CompareError)
+        }.not_to raise_exception
 
       end
     end

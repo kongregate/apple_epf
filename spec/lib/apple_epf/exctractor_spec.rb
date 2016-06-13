@@ -59,14 +59,14 @@ describe AppleEpf::Extractor do
     it "should remove file if successfully untarred" do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.perform
-      File.exists?(extractor.filename).should be_false
+      File.exists?(extractor.filename).should be_falsey
     end
 
     it "should not remove file if successfully untarred and it was asked to leave file" do
       extractor = AppleEpf::Extractor.new(@copy_to, files_to_extract)
       extractor.keep_tbz_after_extract = true
       extractor.perform
-      File.exists?(extractor.filename).should be_true
+      File.exists?(extractor.filename).should be_truthy
     end
   end
 end
