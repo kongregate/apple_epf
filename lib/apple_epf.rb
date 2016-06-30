@@ -36,14 +36,12 @@ module AppleEpf
   mattr_accessor :extract_dir
   @@extract_dir = [Dir.tmpdir, 'epm_files'].join('/')
 
-  mattr_accessor :log_to_console
-  @@keep_tbz_after_extract = log_to_console
-
   mattr_accessor :log_file
-  @@log_file = '/dev/null'
+  @@log_file = STDOUT
 
   mattr_accessor :files_matrix
-  @@files_matrix = { popularity: ['application_popularity_per_genre'] }.freeze
+  @@files_matrix = {}.freeze
+
   mattr_accessor :archiver
   @@archiver = :gnutar
 

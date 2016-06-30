@@ -1,8 +1,8 @@
 module AppleEpf
   module Finder
     extend self
-    ITUNES_FULL_URL = 'https://feeds.itunes.apple.com/feeds/epf/v3/full/'.freeze
-    ITUNES_INCREMENTAL_URL = 'https://feeds.itunes.apple.com/feeds/epf/v3/full/%s/incremental/'.freeze
+    ITUNES_FULL_URL = 'https://feeds.itunes.apple.com/feeds/epf/v4/full/'.freeze
+    ITUNES_INCREMENTAL_URL = 'https://feeds.itunes.apple.com/feeds/epf/v4/full/%s/incremental/'.freeze
 
     # AppleEpf::Finder.find_incremental(Date.parse('20140311'), 'popularity')
     # => "https://feeds.itunes.apple.com/feeds/epf/v3/full/20140305/incremental/20140311/popularity20140311.tbz"

@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'thin'
+  s.add_development_dependency 'byebug'
 
   s.add_dependency "curb"
   s.add_dependency 'chronic', '~> 0.10.0'

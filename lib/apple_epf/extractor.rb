@@ -1,13 +1,12 @@
 module AppleEpf
   class Extractor
-    class FileEntry < Struct.new(:tbz_file, :extracted_files); end
+    class FileEntry < Struct.new(:tbz_file); end
 
     attr_reader :file_entry, :filename, :dirname, :basename
     attr_accessor :keep_tbz_after_extract
 
-    def initialize(filename, files_to_extract)
+    def initialize(filename)
       @filename = filename
-      @files_to_extract = files_to_extract
 
       @dirname = File.dirname(@filename)
       @basename = File.basename(@filename)
@@ -16,20 +15,19 @@ module AppleEpf
     # TODO: use multithread uncompressing tool
     def perform
       @extracted_files = []
-      @files_to_extract.each do |f|
-        @extracted_files.push File.basename(@filename, '.tbz') + '/' + f
-      end
 
-      extract = extract_command(@basename, @extracted_files.join(' '))
+      extract = extract_command(filename)
 
-      result = system "cd #{@dirname} && #{extract}"
+      AppleEpf::Logging.logger.error("here it is!!!")
+      AppleEpf::Logging.logger.error("cd #{dirname} && #{extract}")
+      result = system "cd #{dirname} && #{extract}"
 
       if result
         _extracted_files = @extracted_files.map { |f| File.join(@dirname, f) }
-        @file_entry = FileEntry.new(@filename, Hash[@files_to_extract.zip(_extracted_files)])
+        @file_entry = FileEntry.new(@filename)
         FileUtils.remove_file(@filename, true) unless keep_tbz_after_extract?
       else
-        raise "Unable to extract files '#{@files_to_extract.join(' ')}' from #{@filename}"
+        raise "Unable to extract files from #{@filename}"
       end
 
       @file_entry
@@ -37,27 +35,12 @@ module AppleEpf
 
     private
 
-    def extract_command(filename, files_to_extract)
-      opts = archiver_opts
-      "#{archiver_path} #{opts} #{filename} #{files_to_extract}"
+    def extract_command(filename)
+      "#{archiver_path} -xf #{filename}"
     end
 
     def archiver_path
       AppleEpf.archiver_path
-    end
-
-    def archiver_opts
-      format_opt = if AppleEpf.use_lbzip2
-                     '--use-compress-program=lbzip2'
-                   else
-                     '-j'
-                   end
-
-      if AppleEpf.archiver == :gnutar
-        "-x #{format_opt} -f"
-      elsif AppleEpf.archiver == :bsdtar
-        "-x #{format_opt}"
-      end
     end
 
     def keep_tbz_after_extract?

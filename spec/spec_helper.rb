@@ -25,9 +25,8 @@ require 'timecop'
 
 RSpec.configure do |config|
   config.before(:each) do
-    AppleEpf.configure do |c|
-      c.log_to_console = true
-    end
+    AppleEpf::Logging.logger = Logger.new(STDOUT)
+    AppleEpf::Logging.logger.level = Logger::WARN
 
     WebMock.disable_net_connect!
   end

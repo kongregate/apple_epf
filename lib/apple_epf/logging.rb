@@ -6,13 +6,16 @@ module AppleEpf
       @logger ||= initialize_logger
     end
 
+    def self.logger=(logger)
+      @logger = logger
+    end
+
     def logger
       AppleEpf::Logging.logger
     end
 
     def logger_info(data)
       logger.info(data)
-      p data if AppleEpf.log_to_console
     end
 
     private
