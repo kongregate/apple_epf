@@ -22,14 +22,15 @@ module AppleEpf
       curl.perform
       body = curl.body_str
 
-      files = Nokogiri::HTML(body).xpath('//td/a').map(&:text).select { |s| s =~ /.*tbz$/ }
-
-      files.inject({}) do |all, e|
-        e =~ /([a-z]*)(\d*.tbz)/
-        all[Regexp.last_match(1)] = {}
-        all[Regexp.last_match(1)][:base] = Regexp.last_match(2).chomp('.tbz')
-        all[Regexp.last_match(1)][:full_url] = current_url + "/#{Regexp.last_match(1)}#{Regexp.last_match(2)}"
-        all
+      matcher = %r{\A(itunes|match|popularity|pricing)(\d{8})\/\z}
+      matchables = Nokogiri::HTML(body).xpath('//td/a').map(&:text)
+      matchables.each_with_object({}) do |s, all|
+        m = s.match(matcher)
+        next unless m
+        all[m[1]] = {
+          base: m[2],
+          full_url: current_url + "/#{m[1]}#{m[2]}"
+        }
       end
     end
 

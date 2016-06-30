@@ -4,3 +4,4 @@ pkg/
 local_testing
 .emacs.desktop
 Gemfile.lock
+.byebug_history
