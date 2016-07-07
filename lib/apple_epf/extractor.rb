@@ -18,8 +18,6 @@ module AppleEpf
 
       extract = extract_command(filename)
 
-      AppleEpf::Logging.logger.error("here it is!!!")
-      AppleEpf::Logging.logger.error("cd #{dirname} && #{extract}")
       result = system "cd #{dirname} && #{extract}"
 
       if result
