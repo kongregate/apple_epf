@@ -21,8 +21,12 @@ module AppleEpf
     private
 
     def self.initialize_logger
-      logfile = File.open(File.expand_path(AppleEpf.log_file), File::WRONLY | File::APPEND | File::CREAT)
-      logger = Logger.new(logfile, 'weekly')
+      if STDOUT == AppleEpf.log_file
+        log_file = STDOUT
+      else
+        log_file = File.open(File.expand_path(AppleEpf.log_file), File::WRONLY | File::APPEND | File::CREAT)
+      end
+      logger = Logger.new(log_file, 'weekly')
       logger.level = Logger::DEBUG
       logger
     rescue
