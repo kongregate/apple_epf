@@ -12,8 +12,8 @@ module AppleEpf
       @keep_tbz_after_extract = !!keep_tbz_after_extract || AppleEpf.keep_tbz_after_extract
     end
 
-    def self.get_current_list
-      curl = Curl::Easy.new(current_url)
+    def self.get_list(url = current_url, response_hash = {})
+      curl = Curl::Easy.new(url)
       curl.http_auth_types = :basic
       curl.username = AppleEpf.apple_id
       curl.password = AppleEpf.apple_password
@@ -24,13 +24,11 @@ module AppleEpf
 
       matcher = %r{\A(itunes|match|popularity|pricing)(\d{8})\/\z}
       matchables = Nokogiri::HTML(body).xpath('//td/a').map(&:text)
-      matchables.each_with_object({}) do |s, all|
+      matchables.each_with_object(response_hash) do |s, all|
         m = s.match(matcher)
         next unless m
-        all[m[1]] = {
-          base: m[2],
-          full_url: current_url + "/#{m[1]}#{m[2]}"
-        }
+        all[m[2]] ||= {}
+        all[m[2]][m[1]] = url + "/#{m[1]}#{m[2]}"
       end
     end
 
@@ -98,8 +96,30 @@ module AppleEpf
       'incremental'
     end
 
-    def self.current_url
-      'https://feeds.itunes.apple.com/feeds/epf/v4/full/current/incremental/current'
+    def self.incremental_url
+      'https://feeds.itunes.apple.com/feeds/epf/v4/full/current/incremental'
+    end
+
+    def self.get_file_list
+      curl = Curl::Easy.new(incremental_url)
+      curl.http_auth_types = :basic
+      curl.username = AppleEpf.apple_id
+      curl.password = AppleEpf.apple_password
+      curl.follow_location = true
+      curl.max_redirects = 5
+      curl.perform
+      body = curl.body_str
+
+      matcher = %r{\A(\d{8})\/\z}
+      matchables = Nokogiri::HTML(body).xpath('//td/a').map(&:text)
+      result = matchables.each_with_object({}) do |s, all|
+        m = s.match(matcher)
+        next unless m
+        date = m[1]
+        get_list("#{incremental_url}/#{date}", all)
+      end
+
+      result
     end
   end
 
@@ -112,6 +132,10 @@ module AppleEpf
 
     def self.current_url
       'https://feeds.itunes.apple.com/feeds/epf/v4/full/current'
+    end
+
+    def self.get_file_list
+      get_list
     end
   end
 end
