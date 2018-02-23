@@ -5,11 +5,12 @@ module AppleEpf
     attr_reader :downloader, :filedate, :files_matrix
     attr_accessor :store_dir, :keep_tbz_after_extract
 
-    def initialize(filedate, files_matrix = nil, store_dir = nil, keep_tbz_after_extract = nil)
+    def initialize(filedate, files_matrix = nil, store_dir = nil, keep_tbz_after_extract = nil, full_date = nil)
       @filedate = filedate
       @files_matrix = files_matrix || AppleEpf.files_matrix
       @store_dir = store_dir
       @keep_tbz_after_extract = !!keep_tbz_after_extract || AppleEpf.keep_tbz_after_extract
+      @full_date = full_date
     end
 
     def self.get_list(url = current_url, response_hash = {})
@@ -73,7 +74,7 @@ module AppleEpf
       end
 
       def download(filename, table)
-        downloader = AppleEpf::Downloader.new(type, filename.to_s, table, @filedate)
+        downloader = AppleEpf::Downloader.new(type, filename.to_s, table, @filedate, nil, @full_date)
         downloader.dirpath = @store_dir if @store_dir
         downloader.download
         downloader

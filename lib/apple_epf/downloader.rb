@@ -12,12 +12,13 @@ module AppleEpf
 
     attr_reader :download_to, :apple_filename_full
     attr_writer :dirpath
-    def initialize(type, filename, table, filedate, force_url = nil)
+    def initialize(type, filename, table, filedate, force_url = nil, full_date = nil)
       @type = type
       @filename = filename # itunes, popularity, match, pricing
       @table = table
       @filedate = filedate
       @force_url = force_url
+      @full_date = full_date
     end
 
     def prepare
@@ -88,15 +89,20 @@ module AppleEpf
     end
 
     def main_dir_date(force_last = false)
-      if @type == 'incremental'
-        # from Mon to Thurday dumps are in prev week folder
-        this_or_last = @filedate.wday <= 4 || force_last ? 'last' : 'this'
-      elsif @type == 'full'
-        # full downloads usually are done only once. user can determine when it should be done
-        this_or_last = 'this'
+      if @full_date
+        main_folder_date = @full_date
+      else
+        if @type == 'incremental'
+          # from Mon to Thurday dumps are in prev week folder
+          this_or_last = @filedate.wday <= 4 || force_last ? 'last' : 'this'
+        elsif @type == 'full'
+          # full downloads usually are done only once. user can determine when it should be done
+          this_or_last = 'this'
+        end
+
+        main_folder_date = Chronic.parse("#{this_or_last} week wednesday", now: @filedate.to_time).to_date
       end
 
-      main_folder_date = Chronic.parse("#{this_or_last} week wednesday", now: @filedate.to_time).to_date
       date_to_epf_format(main_folder_date)
     end
   end
